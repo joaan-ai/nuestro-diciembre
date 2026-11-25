@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7e263b">
+<title>Nuestro diciembre ❤️</title>
+<style>
+:root{--wine:#7e263b;--rose:#b94d63;--cream:#fff5e9;--gold:#e9c58c;--ink:#4a2630}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:radial-gradient(circle at top,#fff8ef 0,#f5e2d8 48%,#ead0c8 100%);overflow-x:hidden}
+header{text-align:center;padding:34px 16px 18px}
+.kicker{letter-spacing:.22em;text-transform:uppercase;font:600 11px Arial,sans-serif;color:#a45a62}
+h1{font-size:clamp(35px,8vw,62px);font-weight:normal;margin:10px 0 8px;color:var(--wine)}
+.subtitle{font-size:17px;line-height:1.5;margin:0 auto;max-width:560px}
+.heart{color:#b83d58}
+.wrap{max-width:900px;margin:0 auto;padding:12px 18px 48px}
+.garland{text-align:center;color:#a47a45;letter-spacing:8px;font-size:22px;margin:5px 0 20px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.door{position:relative;min-height:112px;border:1px solid rgba(255,255,255,.65);border-radius:17px;background:linear-gradient(145deg,#a83e55,#79263c);color:#fff8ed;box-shadow:0 7px 15px #63303a26;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:transform .2s,box-shadow .2s;overflow:hidden}
+.door:before{content:"";position:absolute;inset:7px;border:1px solid #eacb9b80;border-radius:12px;pointer-events:none}
+.door:hover{transform:translateY(-4px);box-shadow:0 12px 20px #63303a35}
+.door .num{font-size:34px;line-height:1}
+.door .hint{font:11px Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.door .symbol{font-size:15px}
+.door.opened{background:linear-gradient(145deg,#d5a86d,#b47c4c);color:#fff}
+.door.locked{opacity:.72;cursor:not-allowed;filter:saturate(.7)}
+.note{text-align:center;margin:20px auto 0;font:13px Arial,sans-serif;color:#80515a}
+footer{text-align:center;padding:18px;color:#875c60;font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#241018a8;z-index:5;padding:18px;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.paper{width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--cream);border-radius:22px;padding:28px 24px 24px;box-shadow:0 20px 70px #16080b66;position:relative;text-align:center}
+.close{position:absolute;right:14px;top:12px;border:0;background:transparent;font-size:25px;color:#88515b;cursor:pointer}
+.paper .day{font:11px Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#a45a62}
+.paper h2{font-size:32px;font-weight:normal;color:var(--wine);margin:12px 0}
+.paper p{font-size:18px;line-height:1.65;white-space:pre-wrap}
+.paper .decor{font-size:30px;margin:8px}
+.edit{display:block;margin:26px auto 0;background:transparent;border:1px solid #b98283;color:#75434c;border-radius:30px;padding:10px 16px;font:12px Arial,sans-serif;cursor:pointer}
+@media(max-width:560px){.grid{gap:8px}.door{min-height:88px;border-radius:13px}.door .num{font-size:29px}.door .hint{font-size:9px}.wrap{padding-inline:12px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">Una sorpresa para alguien especial</div>
+  <h1>Nuestro diciembre <span class="heart">♥</span></h1>
+  <p class="subtitle">24 días, 24 pequeños motivos para sonreír.<br>He preparado algo para ti…</p>
+</header>
+<main class="wrap">
+  <div class="garland">✦ ❄ ✦ ❄ ✦ ❄ ✦</div>
+  <section class="grid" id="calendar" aria-label="Calendario de adviento"></section>
+  <p class="note" id="progress">Abre una puerta cada día y descubre tu sorpresa ❤️</p>
+</main>
+<footer>Hecho con cariño, solo para ti <span class="heart">♥</span></footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="paper">
+    <button class="close" id="close" aria-label="Cerrar">×</button>
+    <div class="decor">♥ ✨ ♥</div>
+    <div class="day" id="modalDay">DÍA 1</div>
+    <h2 id="modalTitle">Una sorpresa para ti</h2>
+    <p id="modalText"></p>
+    <button class="edit" id="closeBottom">Volver al calendario</button>
+  </div>
+</div>
+<script>
+/* Personaliza los textos de las 24 sorpresas en esta lista. */
+const surprises = [
+ ["Una cosita para empezar","Quería empezar este calendario recordándote lo muchísimo que te quiero. Gracias por hacer mis días más bonitos. ❤️"],
+ ["Un recuerdo","Hoy quiero que recuerdes uno de esos momentos nuestros que siempre me hacen sonreír. Piensa en tu favorito."],
+ ["Tres cosas que adoro de ti","Tu sonrisa, tu forma de ser y cómo consigues alegrarme incluso en los días más normales."],
+ ["Un abrazo pendiente","Este vale por un abrazo largo, de esos en los que no hace falta decir nada."],
+ ["Nuestra canción","Hoy toca escuchar esa canción que nos recuerda a nosotros. 🎶"],
+ ["Un plan juntos","Tú eliges el plan y yo pongo las ganas. Tenemos una cita pendiente."],
+ ["Un piropo","No sé si te lo digo suficiente, pero me encantas. Por dentro y por fuera."],
+ ["Un día especial","Ojalá pudiéramos guardar en una cajita todos nuestros días bonitos."],
+ ["Vale por un beso","Canjeable por tantos besos como quieras. 💋"],
+ ["Una foto","Aquí pondremos una foto nuestra que me encanta y que siempre quiero recordar."],
+ ["Gracias","Gracias por estar, por escucharme y por compartir tantos momentos conmigo."],
+ ["Un caprichito","Hoy tienes derecho a elegir tu pequeño capricho. ¡Invito yo!"],
+ ["Lo que más me gusta","Me encanta poder ser yo mismo contigo y compartir las tonterías más pequeñas."],
+ ["Una aventura","Tenemos que descubrir algún sitio nuevo juntos. ¡Que sea una aventura nuestra!"],
+ ["Un mensaje","Si hoy tienes un día complicado, recuerda que estoy aquí y que puedes contar conmigo."],
+ ["Vale por una cita","Una cita organizada por mí. Tú solo tienes que venir con ganas de pasarlo bien."],
+ ["Un recuerdo divertido","Seguro que tenemos mil anécdotas. Hoy toca recordar una de las que nos hacen reír."],
+ ["Mi deseo","Deseo que sigamos sumando momentos, viajes, risas y recuerdos juntos."],
+ ["Un ratito para nosotros","Hoy dejamos las prisas a un lado y dedicamos un ratito solo a nosotros."],
+ ["Eres increíble","No olvides lo especial que eres. Espero poder recordártelo muchas veces."],
+ ["Una sorpresa","Hoy toca una sorpresa elegida especialmente para ti. 🎁"],
+ ["Casi Navidad","Cada día contigo tiene algo bonito. Gracias por formar parte de mi vida."],
+ ["Un deseo para los dos","Ojalá nos esperen muchísimos diciembres más compartiendo ilusiones."],
+ ["Feliz Navidad, cariño","La sorpresa más bonita para mí es tenerte en mi vida. Te quiero muchísimo. ❤️"]
+];
+
+const grid=document.getElementById('calendar');
+const modal=document.getElementById('modal');
+const today=new Date();
+const isDecember2026=today.getFullYear()===2026 && today.getMonth()===11;
+const preview=new URLSearchParams(location.search).has('demo');
+const unlockedThrough=preview?24:(isDecember2026?Math.min(24,today.getDate()):0);
+
+surprises.forEach((item,index)=>{
+ const n=index+1, unlocked=n<=unlockedThrough;
+ const button=document.createElement('button');
+ button.className='door '+(unlocked?'':'locked');
+ button.innerHTML=`<span class="num">${String(n).padStart(2,'0')}</span><span class="symbol">${unlocked?'✦':'🔒'}</span><span class="hint">${unlocked?'Abrir':'Próximamente'}</span>`;
+ button.setAttribute('aria-label',unlocked?`Abrir día ${n}`:`Día ${n}, todavía cerrado`);
+ button.addEventListener('click',()=>{
+   if(!unlocked){return;}
+   document.getElementById('modalDay').textContent=`DÍA ${n}`;
+   document.getElementById('modalTitle').textContent=item[0];
+   document.getElementById('modalText').textContent=item[1];
+   modal.classList.add('show');
+   button.classList.add('opened');
+ });
+ grid.appendChild(button);
+});
+document.getElementById('progress').textContent=preview
+ ? 'Modo demostración: puedes abrir las 24 puertas.'
+ : (unlockedThrough===0?'Las puertas se irán abriendo a partir del 1 de diciembre de 2026.':`Ya puedes abrir ${unlockedThrough} ${unlockedThrough===1?'puerta':'puertas'}. ¡Vuelve mañana para otra sorpresa!`);
+function closeModal(){modal.classList.remove('show')}
+document.getElementById('close').onclick=closeModal;
+document.getElementById('closeBottom').onclick=closeModal;
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
